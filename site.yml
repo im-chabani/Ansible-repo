@@ -5,6 +5,7 @@
   pre-tasks:
 # --- UBUNTU / DEBIAN ---
   - name: Update / Upgrade (Ubuntu)
+    tags: update,ubuntu # To tailor the selection and ansible cmd
     apt:
       update_cache: yes
       upgrade: dist
@@ -12,6 +13,7 @@
 
 # --- CENTOS ---
   - name: Update (Centos)
+    tags: update,centos
     dnf:
       update_only: yes
       update_cache: yes
@@ -24,6 +26,7 @@
   tasks:
   # --- UBUNTU / DEBIAN ---
   - name: install apache and php (Ubuntu)
+    tags: apache,ubuntu
     apt: # command we're using (Debian / ubuntu)
       name: 
         - apache2
@@ -33,6 +36,7 @@
 
 # --- CENTOS ---
   - name: install apache and php (Centos)
+    tags: apache,centos
     dnf: # command we're using (Debian / ubuntu)
       name: 
         - httpd
@@ -47,6 +51,7 @@
   tasks:
 
 - name: install mariaDB (Ubuntu)
+  tags: mariadb,ubuntu
     apt: 
       name: 
         - mariadb
@@ -54,6 +59,7 @@
     when: ansible_distribution == "Ubuntu"
 
   - name: install mariaDB (CentOS)
+    tags: mariadb,centos
     dnf: 
       name: 
         - mariadb-server
@@ -72,4 +78,6 @@
       state: latest
     when: ansible_distribution == "Ubuntu"
 
-# CMD : ansible-playbook --ask-become-pass install_apache.yml
+# CMD : 
+# ansible-playbook --ask-become-pass install_apache.yml
+# ansible-playbook --tags "mariadb,ubuntu" --ask-become-pass site.yml
