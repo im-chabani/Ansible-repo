@@ -1,26 +1,75 @@
 
 ---
-
 - hosts: all
-# equiv: sudo
-  become: true
-  tasks:
-
+  become: true # equiv: sudo
+  pre-tasks:
 # --- UBUNTU / DEBIAN ---
-  - name: apt update
+  - name: Update / Upgrade (Ubuntu)
     apt:
-      update_cahce: yes
-
-  - name: install apache2 package
-    apt: # command we're using (Debian / ubuntu)
-      name: apache2
-      state: latest # install and check for latest whenever playbook executed
-  
-  - name: apache prerequisites
-    apt:
-      name: libapache2-mod-php
-      state: latest
+      update_cache: yes
+      upgrade: dist
+    when: ansible_distribution == "Ubuntu" # var from "gather_facts"
 
 # --- CENTOS ---
+  - name: Update (Centos)
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+#----------------------------------------------------------------------
+
+- hosts: web_servers
+  become: true # equiv: sudo
+  tasks:
+  # --- UBUNTU / DEBIAN ---
+  - name: install apache and php (Ubuntu)
+    apt: # command we're using (Debian / ubuntu)
+      name: 
+        - apache2
+        - libapache2-mod-php
+      state: latest # install and check for latest whenever playbook executed
+    when: ansible_distribution == "Ubuntu"
+
+# --- CENTOS ---
+  - name: install apache and php (Centos)
+    dnf: # command we're using (Debian / ubuntu)
+      name: 
+        - httpd
+        - php
+      state: latest 
+    when: ansible_distribution == "CentOS"
+  
+#----------------------------------------------------------------------
+
+- hosts: db_servers
+  become: true # equiv: sudo
+  tasks:
+
+- name: install mariaDB (Ubuntu)
+    apt: 
+      name: 
+        - mariadb
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install mariaDB (CentOS)
+    dnf: 
+      name: 
+        - mariadb-server
+      state: latest
+    when: ansible_distribution == "CentOS"
+
+#----------------------------------------------------------------------
+
+- hosts: file_servers
+  become: true # equiv: sudo
+  tasks:
+
+- name: install samba (Ubuntu)
+      name: 
+        - samba
+      state: latest
+    when: ansible_distribution == "Ubuntu"
 
 # CMD : ansible-playbook --ask-become-pass install_apache.yml
