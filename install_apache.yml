@@ -1,0 +1,26 @@
+
+---
+
+- hosts: all
+# equiv: sudo
+  become: true
+  tasks:
+
+# --- UBUNTU / DEBIAN ---
+  - name: apt update
+    apt:
+      update_cahce: yes
+
+  - name: install apache2 package
+    apt: # command we're using (Debian / ubuntu)
+      name: apache2
+      state: latest # install and check for latest whenever playbook executed
+  
+  - name: apache prerequisites
+    apt:
+      name: libapache2-mod-php
+      state: latest
+
+# --- CENTOS ---
+
+# CMD : ansible-playbook --ask-become-pass install_apache.yml
