@@ -31,3 +31,9 @@ db_servers:
 file_servers:
 - 10.10.10.103 (ubuntu)
 
+# execute the playbooks
+Execute the whole yml file : `ansible-playbook --ask-become-pass install_apache.yml`
+Execute with tag(s) : `ansible-playbook --tags "mariadb,ubuntu" --ask-become-pass site.yml` note: no space allowed between the tags.
+List the tags of a yml file : `ansible-playbook --list-tags site.yml`
+
+

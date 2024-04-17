@@ -5,6 +5,7 @@
   pre-tasks:
 # --- UBUNTU / DEBIAN ---
   - name: Update / Upgrade (Ubuntu)
+    tags: centos,ubuntu
     tags: update,ubuntu # To tailor the selection and ansible cmd
     apt:
       update_cache: yes
@@ -26,7 +27,7 @@
   tasks:
   # --- UBUNTU / DEBIAN ---
   - name: install apache and php (Ubuntu)
-    tags: apache,ubuntu
+    tags: apache,ubuntu,webserver
     apt: # command we're using (Debian / ubuntu)
       name: 
         - apache2
@@ -36,7 +37,7 @@
 
 # --- CENTOS ---
   - name: install apache and php (Centos)
-    tags: apache,centos
+    tags: apache,centos,webserver
     dnf: # command we're using (Debian / ubuntu)
       name: 
         - httpd
@@ -44,6 +45,15 @@
       state: latest 
     when: ansible_distribution == "CentOS"
   
+  - name: Copy a file
+    tags: webserver
+    copy:
+      src: ./files/default_ste.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
 #----------------------------------------------------------------------
 
 - hosts: db_servers
@@ -51,7 +61,7 @@
   tasks:
 
 - name: install mariaDB (Ubuntu)
-  tags: mariadb,ubuntu
+  tags: mariadb,ubuntu,db
     apt: 
       name: 
         - mariadb
@@ -59,7 +69,7 @@
     when: ansible_distribution == "Ubuntu"
 
   - name: install mariaDB (CentOS)
-    tags: mariadb,centos
+    tags: mariadb,centos,db
     dnf: 
       name: 
         - mariadb-server
@@ -73,6 +83,7 @@
   tasks:
 
 - name: install samba (Ubuntu)
+  tags: ubuntu,smb
       name: 
         - samba
       state: latest
