@@ -9,3 +9,6 @@
 
 [file_servers]
 10.10.10.103
+
+[workstation]
+10.10.10.10
