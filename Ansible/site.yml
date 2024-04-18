@@ -1,4 +1,3 @@
-
 ---
 - hosts: all
   become: true # equiv: sudo
@@ -19,6 +18,25 @@
       update_only: yes
       update_cache: yes
     when: ansible_distribution == "CentOS"
+
+#----------------------------------------------------------------------
+
+hosts: workstations
+become: true
+tasks:
+# --- Install unzip, dl terraform, unzip it and install ---
+- name: install unzip
+  package:
+    name: unzip
+
+- name: install terraform
+  unarchive:
+    src: https://releases.hashicorp.com/terraform/0.14.10/terraform_0.14.10_linux_amd64.zip #Terraform 0.14.10
+    dest: /usr/local/bin
+    remote_src: yes
+    mode: 0755
+    owner: root
+    group: root
 
 #----------------------------------------------------------------------
 
@@ -45,8 +63,9 @@
       state: latest 
     when: ansible_distribution == "CentOS"
   
+# --- Copy file in webservers ---
   - name: Copy a file
-    tags: webserver
+    tags: webserver,copy
     copy:
       src: ./files/default_ste.html
       dest: /var/www/html/index.html
