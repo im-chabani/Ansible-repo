@@ -9,8 +9,8 @@ We'll get back and forth to the inventory later
 Set ssh connexion between master node and the other servers
 `ssh-keygen`
 
-add local link to public key to the inventory
-`ssh-copy-id -i PUBLIC_KEY DEST_SERVER`
+add local link to public key to the inventory (do that to all servers)
+`ssh-copy-id -i PUBLIC_KEY DEST_SERVER` 
 
 # 3- ping test
 ansible all -m ping

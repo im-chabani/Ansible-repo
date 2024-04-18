@@ -24,7 +24,7 @@
 hosts: workstations
 become: true
 tasks:
-# --- Install unzip, dl terraform, unzip it and install ---
+# --- Install unzip, dl, unzip and put Terraform binary in /bin ---
 - name: install unzip
   package:
     name: unzip
@@ -41,7 +41,7 @@ tasks:
 #----------------------------------------------------------------------
 
 - hosts: web_servers
-  become: true # equiv: sudo
+  become: true 
   tasks:
   # --- UBUNTU / DEBIAN ---
   - name: install apache and php (Ubuntu)
@@ -56,13 +56,36 @@ tasks:
 # --- CENTOS ---
   - name: install apache and php (Centos)
     tags: apache,centos,webserver
-    dnf: # command we're using (Debian / ubuntu)
-      name: 
+    dnf: 
+      name: # Install Apache httpd 
         - httpd
         - php
       state: latest 
     when: ansible_distribution == "CentOS"
-  
+
+  - name: start httpd (CENTOS) # --- enable Apache CENTOS ---
+    tags: apache,centos,httpd
+    service:
+      name: httpd
+      state: started
+    when: ansible_distribution == "CentOS"
+
+  - name: change email address for admin # --- example of a change in a config file ---
+    tags: apache,centos,httpd
+    lineinfile: # change a line in a file. Careful of duplication !
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin' # regular expression
+      line: ServerAdmin somebody@somewhere.net
+    when: ansible_distribution == "CentOS"
+    register: httpd
+
+  - name: restart httpd (CentOS) # --- restart apache if it has changed CENTOS ---
+    tags: apache, centos, httpd
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed 
+
 # --- Copy file in webservers ---
   - name: Copy a file
     tags: webserver,copy
@@ -76,7 +99,7 @@ tasks:
 #----------------------------------------------------------------------
 
 - hosts: db_servers
-  become: true # equiv: sudo
+  become: true 
   tasks:
 
 - name: install mariaDB (Ubuntu)
