@@ -4,7 +4,7 @@
   pre-tasks:
 # --- UBUNTU / DEBIAN ---
   - name: Update / Upgrade (Ubuntu)
-    tags: update,centos,ubuntu # To tailor the selection and ansible cmd
+    tags: always,update,centos,ubuntu # To tailor the selection and ansible cmd
     apt:
       update_cache: yes
       upgrade: dist
@@ -12,11 +12,19 @@
 
 # --- CENTOS ---
   - name: Update (Centos)
-    tags: update,centos
+    tags: always,update,centos
     dnf:
       update_only: yes
       update_cache: yes
     when: ansible_distribution == "CentOS"
+
+#----------------------------------------------------------------------
+
+  - name: create user called simone
+    tag: always
+    user:
+      name: simone
+      groups: root
 
 #----------------------------------------------------------------------
 
@@ -71,7 +79,7 @@ tasks:
 
   - name: change email address for admin # --- example of a change in a config file ---
     tags: apache,centos,httpd
-    lineinfile: # change a line in a file. Careful of duplication !
+    lineinfile: # change a line in a file. Careful of duplication in case of typos!
       path: /etc/httpd/conf/httpd.conf
       regexp: '^ServerAdmin' # regular expression
       line: ServerAdmin somebody@somewhere.net
@@ -111,8 +119,8 @@ tasks:
 
   - name: install mariaDB (CentOS)
     tags: mariadb,centos,db
-    dnf: 
-      name: 
+    dnf:
+      name:
         - mariadb-server
       state: latest
     when: ansible_distribution == "CentOS"
@@ -125,11 +133,11 @@ tasks:
 
 - name: install samba (Ubuntu)
   tags: ubuntu,smb
-      name: 
+      name:
         - samba
       state: latest
     when: ansible_distribution == "Ubuntu"
 
-# CMD : 
+# CMD :
 # ansible-playbook --ask-become-pass install_apache.yml
 # ansible-playbook --tags "mariadb,ubuntu" --ask-become-pass site.yml
